@@ -2,6 +2,7 @@
 
 - **PHP Version**: `^8.3` (PHP 8.3+ required).
 - **Testing**: Run `composer test` (PHPUnit; no Testbench).
+- **Coverage**: 100% statement coverage is required. Run `composer test` then `composer run coverage:check` (parses `build/logs/clover.xml`). Only filesystem-error branches may be excluded, always with an explicit `@codeCoverageIgnoreStart`/`End` reason.
 - **Static Analysis**: Run `composer analyse` (PHPStan, level 9).
 - **Code Style**: Run `composer format` (PHP-CS-Fixer). CI enforces `composer run format:check` (dry-run).
 - **Rector**: Run `composer run rector:check` (dry-run); `composer run rector` writes fixes locally.
@@ -24,4 +25,4 @@
 - Fluent return types (`: static`) on all setters.
 - Namespaced helpers in `src/helpers.php`; import with `use function Juaniquillo\BaseBackendComponent\processThemes;`.
 - Trait-per-concern pattern for all reusable behavior.
-- Never silence PHPStan with `@phpstan-ignore`, baselines, asserts, or type-widening; fix the code instead. The single exception is the documented recursive call in `DeserializesComponents::resolveArrayContents()`, which cannot be expressed with a flat array shape.
+- Never silence PHPStan with `@phpstan-ignore`, baselines, type-widening, or inline `@var` overrides; fix the code instead. Narrowing through a runtime-validated `@phpstan-assert` is allowed when the annotation is backed by checks that throw (see `DeserializesComponents::assertComponentArray()`).
