@@ -1,0 +1,14 @@
+build
+vendor
+coverage
+composer.lock
+phpstan.neon
+testbench.yaml
+phpDocumentor.phar
+.phpunit.cache
+.phpunit.result.cache
+phpunit.xml
+.php-cs-fixer.cache
+.tests_coverage
+.vscode
+.idea
