@@ -51,6 +51,21 @@ final class SerializationTest extends TestCase
         $this->assertEquals($component->toArray(), $restored->toArray());
     }
 
+    public function testInvalidNestedComponentArrayThrows(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Invalid component array at contents key 'child'.");
+
+        ComponentDeserializer::fromArray([
+            'name' => 'div',
+            'component' => BaseBackendComponent::class,
+            'attributes' => [],
+            'contents' => [
+                'child' => ['not' => 'a component'],
+            ],
+        ]);
+    }
+
     public function testIndividualComponentDeserializer(): void
     {
         $deserializer = new IndividualComponentDeserializer();
@@ -68,6 +83,10 @@ final class SerializationTest extends TestCase
 
         $this->assertSame(2, $restored->getProp('page'));
         $this->assertSame(['page' => 2], $restored->getProps());
+
+        $restored->setProps(['page' => 3, 'sort' => 'name']);
+
+        $this->assertSame(['page' => 3, 'sort' => 'name'], $restored->getProps());
     }
 }
 

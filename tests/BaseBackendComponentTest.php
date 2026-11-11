@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Juaniquillo\BaseBackendComponent\Tests;
 
 use Juaniquillo\BaseBackendComponent\BaseBackendComponent;
+use Juaniquillo\BaseBackendComponent\Components\DefaultAttributeBag;
 use Juaniquillo\BaseBackendComponent\Themes\GenericThemeManager;
 use PHPUnit\Framework\TestCase;
 
@@ -32,10 +33,16 @@ final class BaseBackendComponentTest extends TestCase
         $component->setContent('Hello');
         $component->setContent('World', 'key_1');
         $component->prependContent('First');
+        $component->prependContent('Zero', 'key_0');
 
+        $this->assertSame('Zero', $component->getContent('key_0'));
         $this->assertSame('Hello', $component->getContent(1));
         $this->assertSame('World', $component->getContent('key_1'));
         $this->assertSame('First', $component->getContent(0));
+
+        $component->setContents(['replaced' => 'Replaced'], overwrite: true);
+
+        $this->assertSame('Replaced', $component->getContent('replaced'));
 
         $component->unsetContent('key_1');
 
@@ -74,6 +81,23 @@ final class BaseBackendComponentTest extends TestCase
         $this->assertSame('form.inputs', $component->getPath());
     }
 
+    public function testNameFromBackedEnum(): void
+    {
+        $component = new BaseBackendComponent(ComponentName::SPAN);
+
+        $this->assertSame('span', $component->getName());
+    }
+
+    public function testAttributeBagWithoutThemesCompilesToNull(): void
+    {
+        $component = new BaseBackendComponent('div');
+
+        $bag = $component->getAttributeBag();
+
+        $this->assertInstanceOf(DefaultAttributeBag::class, $bag);
+        $this->assertNull($bag->themes);
+    }
+
     public function testAttributeBagMergesThemeClasses(): void
     {
         $component = new BaseBackendComponent(
@@ -105,4 +129,9 @@ final class BaseBackendComponentTest extends TestCase
         $this->assertSame(['transition' => 'fade'], $array['settings']);
         $this->assertSame([], $array['theme']['themes']);
     }
+}
+
+enum ComponentName: string
+{
+    case SPAN = 'span';
 }
