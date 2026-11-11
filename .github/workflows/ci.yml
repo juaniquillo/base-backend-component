@@ -22,6 +22,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer
+          coverage: xdebug
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -37,3 +38,6 @@ jobs:
 
       - name: Run Tests (PHPUnit)
         run: composer test
+
+      - name: Check Coverage (100% required)
+        run: composer run coverage:check

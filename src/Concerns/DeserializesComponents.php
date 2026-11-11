@@ -101,17 +101,39 @@ trait DeserializesComponents
         $contents = [];
 
         foreach ($contentsArray as $name => $content) {
-            $contents[$name] = \is_array($content)
-                /*
-                 * Contents nest recursively, which cannot be expressed
-                 * in a flat array shape.
-                 *
-                 * @phpstan-ignore argument.type
-                 */
-                ? $this->resolveComponent($content)
-                : $content;
+            if (!\is_array($content)) {
+                $contents[$name] = $content;
+
+                continue;
+            }
+
+            $this->assertComponentArray($content, $name);
+
+            $contents[$name] = $this->resolveComponent($content);
         }
 
         return $contents;
+    }
+
+    /**
+     * Nested contents are recursive, which a flat array shape cannot
+     * express. Validating the shape here lets PHPStan narrow the value
+     * instead of silencing the type error.
+     *
+     * @phpstan-assert ComponentInputArray $value
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function assertComponentArray(mixed $value, string|int $key): void
+    {
+        if (
+            !\is_array($value)
+            || !isset($value['name'], $value['component'], $value['attributes'])
+            || (!\is_string($value['name']) && !\is_int($value['name']))
+            || !\is_string($value['component'])
+            || !\is_array($value['attributes'])
+        ) {
+            throw new \InvalidArgumentException("Invalid component array at contents key '{$key}'.");
+        }
     }
 }

@@ -78,11 +78,15 @@ and a test checklist.
 ```bash
 composer install
 composer test
+composer run coverage:check
 composer analyse
 composer run format:check
 composer run rector:check
 composer qa
 ```
+
+The suite must keep 100% statement coverage. `composer qa:ci` runs the same
+checks plus the coverage gate, which is what CI executes.
 
 ## License
 
