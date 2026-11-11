@@ -42,6 +42,7 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "coverage:check": "@php bin/coverage-check.php",
         "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
         "format": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php src tests",
         "format:check": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff src tests",
@@ -52,6 +53,13 @@
             "@composer run format:check",
             "@composer run rector:check",
             "@composer run test"
+        ],
+        "qa:ci": [
+            "@composer run analyse",
+            "@composer run format:check",
+            "@composer run rector:check",
+            "@composer run test",
+            "@composer run coverage:check"
         ]
     },
     "config": {
