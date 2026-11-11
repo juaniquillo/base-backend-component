@@ -74,15 +74,21 @@ final readonly class FileCache implements CacheInterface
         $files = glob($this->directory.'/*.cache');
 
         if ($files === false) {
+            // @codeCoverageIgnoreStart
+            // glob() only fails on filesystem errors.
             return true;
+            // @codeCoverageIgnoreEnd
         }
 
         $success = true;
 
         foreach ($files as $file) {
+            // @codeCoverageIgnoreStart
+            // unlink() failure requires OS-level permission errors.
             if (!unlink($file)) {
                 $success = false;
             }
+            // @codeCoverageIgnoreEnd
         }
 
         return $success;
@@ -105,9 +111,12 @@ final readonly class FileCache implements CacheInterface
         $success = true;
 
         foreach ($values as $key => $value) {
+            // @codeCoverageIgnoreStart
+            // set() only returns false on filesystem write failure.
             if (!$this->set($key, $value, $ttl)) {
                 $success = false;
             }
+            // @codeCoverageIgnoreEnd
         }
 
         return $success;
@@ -118,9 +127,12 @@ final readonly class FileCache implements CacheInterface
         $success = true;
 
         foreach ($keys as $key) {
+            // @codeCoverageIgnoreStart
+            // delete() only returns false on filesystem failure.
             if (!$this->delete($key)) {
                 $success = false;
             }
+            // @codeCoverageIgnoreEnd
         }
 
         return $success;
@@ -195,7 +207,11 @@ final readonly class FileCache implements CacheInterface
         $contents = file_get_contents($file);
 
         if ($contents === false) {
+            // @codeCoverageIgnoreStart
+            // Only reachable when the file disappears between is_file() and
+            // this read.
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         /** @var array{value: mixed, expiry: ?int}|false $result */
